@@ -7,52 +7,52 @@ const cTable = require('console.table');
 const PORT = process.env.PORT || 3001;
 
 
-function initializePrompts() {
+const initializePrompts = () => {
     inquirer.prompt([
     {
         type: 'checkbox',
         name: 'action',
         message: 'Please select from the following options:',
-        choices: ["View all departments", "View all roles", "View all employees", "Add a department", "Add a role", "Add an employee", "Update an employee role"]
+        choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role', 'Quit']
     },
-
-]).then((startApp) => {
-    switch (startApp.action) {
+]).then((start) => {
+    switch (start.action) {
         case 'View all departments':
-            this.viewDepartments();
+            viewDepartments();
             break;
         case 'View all roles':
-            this.viewRoles();
+            viewRoles();
             break;
         case 'View all employees':
-            this.viewEmployees();
+            viewEmployees();
             break;
         case 'Add a department':
-            this.addDepartment();
+            addDepartment();
             break;
         case 'Add a role':
-            this.addRole();
+            addRole();
             break;
         case 'Add an employee':
-            this.addEmployee();
+            addEmployee();
             break;
         case 'Update an employee role':
-            this.updateEmployee();
+            updateEmployee();
             break;
             
         }
     });
 };
 
-function viewDepartments() {
+
+const viewDepartments = () => {
     const sql = `SELECT * FROM department`;
     
     db.query(sql, (err, rows) => {
         if (err) throw err;
-        console.table(rows);
-    })
+        return console.table(rows);
+    });
     //TODO: add exit prompt?
-}
+};
 
 function addDepartment() {
     inquirer.prompt(
