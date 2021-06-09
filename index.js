@@ -6,6 +6,9 @@ const { title } = require('process');
 
 const PORT = process.env.PORT || 3001;
 
+let deptArr = [];
+let roleArr = [];
+let mgrArr = [];
 
 const initializePrompts = () => {
     inquirer.prompt([
@@ -114,7 +117,6 @@ const addDepartment = () => {
 };
 
 const addRole = () => {
-    let deptArr = [];
     let result;
     //set role id as value to update role table
     const sql = `SELECT name, id as value FROM department`
@@ -169,6 +171,86 @@ const addRole = () => {
     })
 };
 
+const addEmployee = async () => {
+    roleQuery();
+    managerQuery();
+        inquirer.prompt([
+        {
+            type: 'input',
+            name: 'first_name',
+            message: 'Input name of first name of new employee:',
+            validate: title => {
+                if (title) {
+                return true;
+                } else {
+                console.log('Please enter name');
+                return false
+                }
+            }
+        },
+        {
+            type: 'input',
+            name: 'last_name',
+            message: 'Input name of last name of new employee:',
+            validate: title => {
+                if (title) {
+                return true;
+                } else {
+                console.log('Please enter name');
+                return false
+                }
+            }
+        },
+        {
+            type: 'list',
+            name: 'role',
+            message: 'Select position of new employee:',
+            choices: roleArr
+        },
+        {
+            type: 'list',
+            name: 'manager',
+            message: 'Select manager (if employee does not have a manager, select NA):',
+            choices: mgrArr
+        }
+    ])
+        .then((newEmployee) => {
+            const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
+            const params = [newEmployee.first_name, newEmployee.last_name, newEmployee.role, newEmployee.manager];
+            console.log(params);
+            db.query(sql, params, (err, rows) => {
+                if (err) throw err;
+                console.log('New employee successfully added');
+                initializePrompts();
+            });
+        })
+    };
+
+
+const roleQuery = () => {
+    let roleArrRes;
+    const sql = `SELECT title AS name, id AS value FROM role`
+    db.query(sql, (err, rows) => {
+        roleArrRes = (JSON.parse(JSON.stringify(rows)));
+        roleArr = roleArrRes;
+        console.log(roleArr);
+        return roleArr;
+    })
+};
+
+const managerQuery = () => {
+    let mgrArrRes;
+    const sql = `SELECT CONCAT(first_name, ' ', last_name) AS Employee, id as value FROM employee`
+    db.query(sql, (err, rows) => {
+        mgrArrRes = (JSON.parse(JSON.stringify(rows)));
+        mgrArr = mgrArrRes;
+        mgrArr.push({title: 'NA', value: null})
+        // console.log(mgrArr);
+    })
+    return mgrArr
+};
+
+console.log('hi', roleQuery());
 
 // initializePrompts();
-addRole();
+addEmployee();
