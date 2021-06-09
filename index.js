@@ -1,5 +1,5 @@
 //TODO: BONUS - Update employee managers, View employees by manager, View employees by department., Delete departments, roles, and employees, View the total utilized budget of a department—in other words, the combined salaries of all employees in that department.
-
+//TODO: 
 const inquirer = require('inquirer');
 const db = require('./db/connection');
 const cTable = require('console.table');
@@ -115,7 +115,7 @@ const addDepartment = () => {
 };
 
 const addRole = () => {
-    //FIXME: dept array for choices
+    //TODO: dept array for choices
     let deptArr = [];
     const sql = `SELECT name AS department_name FROM department`;
     // db.query(sql, (err, rows) => {
@@ -157,7 +157,7 @@ const addRole = () => {
                 type: 'list',
                 name: 'department',
                 message: 'Select department for new position:',
-                loop: //FIXME: dynamic array based on db
+                //loop: //TODO: dynamic array based on db
             })
     
             .then((newRole) => {
