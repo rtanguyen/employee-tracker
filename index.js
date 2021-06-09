@@ -14,6 +14,7 @@ const initializePrompts = () => {
     inquirer.prompt([
     {
         type: 'list',
+        pageSize: 12,
         name: 'action',
         message: 'Please select from the following options:',
         choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee role', 'Quit']
@@ -41,9 +42,9 @@ const initializePrompts = () => {
         case 'Update an employee role':
             updateEmployee();
             break;
-        // case 'Quit':
-        //     endApp();
-        //     break;
+        case 'Quit':
+            endApp();
+            break;
         default:
             console.log("error");
         }
@@ -56,9 +57,10 @@ const viewDepartments = () => {
     
     db.query(sql, (err, rows) => {
         if (err) throw err;
-        return console.table(rows);
+        console.table(rows);
+        endPrompt();
     });
-    initializePrompts();
+
 };
 
 const viewRoles = () => {
@@ -69,14 +71,15 @@ const viewRoles = () => {
                 ON role.department_id = department.id`;
     db.query(sql, (err, rows) => {
         if (err) throw err;
-        return console.table(rows);
+        console.table(rows);
+        endPrompt();
     });
-    initializePrompts();
 };
 
 const viewEmployees = () => {
-    const sql = `SELECT employee.id, employee.first_name, employee.last_name, 
-                role.title, role.salary, department.name, employee.manager_id,
+    const sql = `
+                SELECT employee.id, employee.first_name, employee.last_name, 
+                role.title, role.salary, department.name AS department_name, 
                 CONCAT(manager.first_name, ' ', manager.last_name) AS manager
                 FROM employee
                 LEFT JOIN employee manager ON manager.id = employee.manager_id
@@ -84,9 +87,10 @@ const viewEmployees = () => {
                 INNER JOIN department ON role.department_id = department.id`;
     db.query(sql, (err, rows) => {
         if (err) throw err;
-        return console.table(rows);
+        console.table(rows);
+        endPrompt();
     });
-    initializePrompts();
+
 };
 
 //==================ADD FUNCTIONS==================//
@@ -165,16 +169,41 @@ const addRole = () => {
             db.query(sql, params, (err, rows) => {
                 if (err) throw err;
                 console.log('New role successfully added');
-                initializePrompts();
+                endPrompt();
             });
         })
     })
 };
 
-const addEmployee = async () => {
-    roleQuery();
-    managerQuery();
-        inquirer.prompt([
+//query to get employee roles
+const addEmployee = () => {
+    let roleArrRes;
+    const sql = `SELECT title name, id AS value FROM role`
+    db.query(sql, (err, rows) => {
+        roleArrRes = (JSON.parse(JSON.stringify(rows)));
+        roleArr = roleArrRes;
+    //add if statement for updating/adding?
+        managerQuery(roleArr);
+        return roleArr;
+    })
+};
+
+//query to get managers
+const managerQuery = (roleArr) => {
+    let mgrArrRes;
+    const sql = `SELECT CONCAT(first_name, ' ', last_name) AS name, id as value FROM employee`
+    db.query(sql, (err, rows) => {
+        mgrArrRes = (JSON.parse(JSON.stringify(rows)));
+        mgrArr = mgrArrRes;
+        mgrArr.push({title: 'NA', value: null});
+        addEmployeePrompts(roleArr, mgrArr)
+    })
+    return mgrArr
+};
+
+//run employee prompts with arrays from addEmployee and managerQuery
+const addEmployeePrompts = (newEmployeeRole, newEmployeeMgr) => {
+    inquirer.prompt([
         {
             type: 'input',
             name: 'first_name',
@@ -217,40 +246,39 @@ const addEmployee = async () => {
         .then((newEmployee) => {
             const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
             const params = [newEmployee.first_name, newEmployee.last_name, newEmployee.role, newEmployee.manager];
-            console.log(params);
+            console.log('params:', params);
             db.query(sql, params, (err, rows) => {
                 if (err) throw err;
                 console.log('New employee successfully added');
-                initializePrompts();
+                endPrompt();
             });
-        })
-    };
+        });
+    }
+
+//==================UPDATE FUNCTIONS==================//
 
 
-const roleQuery = () => {
-    let roleArrRes;
-    const sql = `SELECT title AS name, id AS value FROM role`
-    db.query(sql, (err, rows) => {
-        roleArrRes = (JSON.parse(JSON.stringify(rows)));
-        roleArr = roleArrRes;
-        console.log(roleArr);
-        return roleArr;
-    })
-};
 
-const managerQuery = () => {
-    let mgrArrRes;
-    const sql = `SELECT CONCAT(first_name, ' ', last_name) AS Employee, id as value FROM employee`
-    db.query(sql, (err, rows) => {
-        mgrArrRes = (JSON.parse(JSON.stringify(rows)));
-        mgrArr = mgrArrRes;
-        mgrArr.push({title: 'NA', value: null})
-        // console.log(mgrArr);
-    })
-    return mgrArr
-};
+const endPrompt = () => {
+    inquirer.prompt([
+    {
+        type: 'confirm',
+        name: 'continue',
+        message: 'Would you like to do perform another search?'
+    }
+]).then(response => {
+    if(response.continue === true) {
+        initializePrompts();
+    } else {
+        endApp();
+    }
+})
+}
 
-console.log('hi', roleQuery());
+const endApp = () => {
+    console.log('byeeeee');
+    process.exit();
+}
 
-// initializePrompts();
-addEmployee();
+initializePrompts();
+
