@@ -127,11 +127,10 @@ const addRole = () => {
             // console.log(result);
             // deptArr.push(rows[i].Department);
             deptArr.push(result);
-            console.log(deptArr);
+            console.log('hi', deptArr);
             return deptArr
         }
-    })
-        inquirer.prompt([
+            inquirer.prompt([
             {
                 type: 'input',
                 name: 'title',
@@ -176,6 +175,7 @@ const addRole = () => {
                     initializePrompts();
                 });
             });
+    });
 };
 
 const addEmployee = () => {
