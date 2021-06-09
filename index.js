@@ -3,6 +3,7 @@
 const inquirer = require('inquirer');
 const db = require('./db/connection');
 const cTable = require('console.table');
+const { title } = require('process');
 
 const PORT = process.env.PORT || 3001;
 
@@ -104,14 +105,72 @@ const addDepartment = () => {
         })
         .then((newDepartment) => {
             const sql = `INSERT INTO department (name) VALUES (?)`;
-            const params = newDepartment;
-            console.log(params);
+            const params = newDepartment.name;
             db.query(sql, params, (err, rows) => {
                 if (err) throw err;
                 console.log('New department successfully added');
                 initializePrompts();
             });
-        })
+        });
 };
 
-initializePrompts();
+const addRole = () => {
+    //FIXME: dept array for choices
+    let deptArr = [];
+    const sql = `SELECT name AS department_name FROM department`;
+    // db.query(sql, (err, rows) => {
+    //     for(var i = 0; i < rows.length; i++) {
+    //         deptArr.push(rows[i].department_name);
+    //     }
+    //     console.log(rows[0].department_name);
+    //     // deptArr.push(rows);
+    //     console.log(deptArr);
+    // })
+        inquirer.prompt(
+            {
+                type: 'input',
+                name: 'title',
+                message: 'Input name of position to add to database:',
+                validate: title => {
+                    if (title) {
+                      return true;
+                    } else {
+                      console.log('Please enter position name');
+                      return false
+                    }
+                }
+            },
+            {
+                type: 'input',
+                name: 'salary',
+                message: 'Input salary for new position:',
+                validate: salary => {
+                    if (salary) {
+                      return true;
+                    } else {
+                      console.log('Please enter salary');
+                      return false
+                    }
+                }
+            },
+            {
+                type: 'list',
+                name: 'department',
+                message: 'Select department for new position:',
+                loop: //FIXME: dynamic array based on db
+            })
+    
+            .then((newRole) => {
+                const sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
+                const params = [newRole.title, newRole.salary, newRole.department];
+                console.log(params);
+                db.query(sql, params, (err, rows) => {
+                    if (err) throw err;
+                    console.log('New role successfully added');
+                    initializePrompts();
+                });
+            });
+        };
+
+// initializePrompts();
+addRole();
