@@ -1,5 +1,4 @@
 //TODO: BONUS - Update employee managers, View employees by manager, View employees by department., Delete departments, roles, and employees, View the total utilized budget of a department—in other words, the combined salaries of all employees in that department.
-//TODO: 
 const inquirer = require('inquirer');
 const db = require('./db/connection');
 const cTable = require('console.table');
@@ -115,18 +114,24 @@ const addDepartment = () => {
 };
 
 const addRole = () => {
-    //TODO: dept array for choices
     let deptArr = [];
-    const sql = `SELECT name AS department_name FROM department`;
-    // db.query(sql, (err, rows) => {
-    //     for(var i = 0; i < rows.length; i++) {
-    //         deptArr.push(rows[i].department_name);
-    //     }
-    //     console.log(rows[0].department_name);
-    //     // deptArr.push(rows);
-    //     console.log(deptArr);
-    // })
-        inquirer.prompt(
+    let result;
+    // const sql = `SELECT CONCAT(id, ' ', name) AS Department
+    //             FROM department`;
+    const sql = `SELECT * FROM department`
+    db.query(sql, (err, rows) => {
+        // console.log(rows);
+        // console.log(result);
+        for(var i = 0; i < rows.length; i++) {
+            result = (JSON.parse(JSON.stringify(rows)));
+            // console.log(result);
+            // deptArr.push(rows[i].Department);
+            deptArr.push(result);
+            console.log(deptArr);
+            return deptArr
+        }
+    })
+        inquirer.prompt([
             {
                 type: 'input',
                 name: 'title',
@@ -157,12 +162,13 @@ const addRole = () => {
                 type: 'list',
                 name: 'department',
                 message: 'Select department for new position:',
-                //loop: //TODO: dynamic array based on db
-            })
-    
+                // choices: deptArr
+                choices: deptArr
+            }])
             .then((newRole) => {
+                let newDeptId = newRole.department.split(' ')[0]
                 const sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
-                const params = [newRole.title, newRole.salary, newRole.department];
+                const params = [newRole.title, newRole.salary, newDeptId];
                 console.log(params);
                 db.query(sql, params, (err, rows) => {
                     if (err) throw err;
@@ -170,7 +176,10 @@ const addRole = () => {
                     initializePrompts();
                 });
             });
-        };
+};
 
+const addEmployee = () => {
+
+}
 // initializePrompts();
 addRole();
