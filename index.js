@@ -116,70 +116,59 @@ const addDepartment = () => {
 const addRole = () => {
     let deptArr = [];
     let result;
-    // const sql = `SELECT CONCAT(id, ' ', name) AS Department
-    //             FROM department`;
-    const sql = `SELECT * FROM department`
+    //set role id as value to update role table
+    const sql = `SELECT name, id as value FROM department`
     db.query(sql, (err, rows) => {
-        // console.log(rows);
-        // console.log(result);
-        for(var i = 0; i < rows.length; i++) {
-            result = (JSON.parse(JSON.stringify(rows)));
-            // console.log(result);
-            // deptArr.push(rows[i].Department);
-            deptArr.push(result);
-            console.log('hi', deptArr);
-            return deptArr
-        }
-            inquirer.prompt([
-            {
-                type: 'input',
-                name: 'title',
-                message: 'Input name of position to add to database:',
-                validate: title => {
-                    if (title) {
-                      return true;
-                    } else {
-                      console.log('Please enter position name');
-                      return false
-                    }
+        result = (JSON.parse(JSON.stringify(rows)));
+        deptArr = result;
+        // console.log('deptArr:', deptArr);
+        inquirer.prompt([
+        {
+            type: 'input',
+            name: 'title',
+            message: 'Input name of position to add to database:',
+            validate: title => {
+                if (title) {
+                return true;
+                } else {
+                console.log('Please enter position name');
+                return false
                 }
-            },
-            {
-                type: 'input',
-                name: 'salary',
-                message: 'Input salary for new position:',
-                validate: salary => {
-                    if (salary) {
-                      return true;
-                    } else {
-                      console.log('Please enter salary');
-                      return false
-                    }
+            }
+        },
+        {
+            type: 'input',
+            name: 'salary',
+            message: 'Input salary for new position:',
+            validate: salary => {
+                if (salary) {
+                return true;
+                } else {
+                console.log('Please enter salary');
+                return false
                 }
-            },
-            {
-                type: 'list',
-                name: 'department',
-                message: 'Select department for new position:',
-                // choices: deptArr
-                choices: deptArr
-            }])
-            .then((newRole) => {
-                let newDeptId = newRole.department.split(' ')[0]
-                const sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
-                const params = [newRole.title, newRole.salary, newDeptId];
-                console.log(params);
-                db.query(sql, params, (err, rows) => {
-                    if (err) throw err;
-                    console.log('New role successfully added');
-                    initializePrompts();
-                });
+            }
+        },
+        {
+            type: 'list',
+            name: 'department',
+            message: 'Select department for new position:',
+            choices: deptArr
+        }])
+        .then((newRole) => {
+            console.log(newRole.department);
+            const sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
+            const params = [newRole.title, newRole.salary, newRole.department];
+            console.log(params);
+            db.query(sql, params, (err, rows) => {
+                if (err) throw err;
+                console.log('New role successfully added');
+                initializePrompts();
             });
-    });
+        })
+    })
 };
 
-const addEmployee = () => {
 
-}
 // initializePrompts();
 addRole();
