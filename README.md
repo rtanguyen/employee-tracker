@@ -32,3 +32,4 @@ npm start
 The application will prompt a series of options for the user to choose from. The user may choose to exit the application after each question or select 'Quit' from the main menu. 
 
 ## Walkthrough Video
+https://drive.google.com/file/d/1g0PsxUapmE8ewRM-y71FqTzyD0i5VHYy/view
