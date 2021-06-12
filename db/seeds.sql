@@ -36,8 +36,8 @@ VALUES
     ('Jourdan', 'Lovelady', 7, 13),
     ('Laureen', 'Llanto', 7, 13),
     ('Alex', 'Huynh', 7, 13),
-    ('Tiffany', 'Lieu', 8, NULL),
-    ('Ted', 'Daniels', 9, 15),
-    ('Luke', 'Bohmfalk', 10, NULL),
-    ('Michael', 'Matthys', 11, 17),
-    ('Ellie', 'Nielsen', 12, NULL);
+    ('Ellie', 'Nielsen', 8, NULL),
+    ('Paul', 'Paralegal', 9, 15),
+    ('Lizzie', 'Lawyer', 10, NULL),
+    ('Toby', 'Flenderson', 11, 17),
+    ('Holly', 'Flax', 12, NULL);

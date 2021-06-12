@@ -26,7 +26,7 @@ const initializePrompts = () => {
           "Update employee role",
           "Update employee manager",
           "Delete department",
-          // "Delete role",
+          "Delete role",
           "Delete employee",
           "Quit",
         ],
@@ -67,9 +67,9 @@ const initializePrompts = () => {
         case "Delete department":
           deleteDepartment();
           break;
-        // case "Delete role":
-        //   deleteRole();
-        //   break;
+        case "Delete role":
+          deleteRole();
+          break;
         case "Delete employee":
           deleteEmployee();
           break;
