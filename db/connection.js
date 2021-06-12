@@ -8,7 +8,7 @@ const db = mysql.createConnection(
     password: 'asdfghjkl2!',
     database: 'cms',
   },
-    console.log('connected to cms database')
+    console.log('connected to database','\n Welcome! \n')
   );
 
 module.exports = db;
